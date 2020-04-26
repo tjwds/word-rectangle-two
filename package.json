@@ -1,0 +1,18 @@
+{
+  "name": "word-rectangle-two",
+  "version": "1.0.0",
+  "description": "Let's make a rectangle of words. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Joe Woods <joewoods@fastmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jest": "^23.8.2",
+    "jest": "^25.4.0"
+  }
+}
