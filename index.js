@@ -121,11 +121,14 @@ const wordsHavePotentialColumnWords = function wordsHavePotentialColumnWords(
   return false;
 };
 
-const recursivelyTestWords = function recursivelyTestWords(candidateResultZ, rowDictionary, rotatedCacheZ, columnLength, mappedDictionary, returnNotLog, bannedLastWords) {
+const recursivelyTestWords = function recursivelyTestWords(candidateResultZ, rowDictionary, rotatedCacheZ, columnLength, mappedDictionary, returnNotLog, bannedLastWords, consoleLogging, useStartIndex) {
   let rotatedCache = rotatedCacheZ;
   let candidateResult = [...candidateResultZ];
-  for (let dictionaryIndex = 0; dictionaryIndex < rowDictionary.length; dictionaryIndex += 1) {
+  for (let dictionaryIndex = useStartIndex || 0; dictionaryIndex < rowDictionary.length; dictionaryIndex += 1) {
     const word = rowDictionary[dictionaryIndex];
+    if (consoleLogging) {
+      console.log(`${dictionaryIndex}/${rowDictionary.length} (${columnLength}): ${word}`);
+    }
     if (!bannedLastWords.includes(word)) {
       candidateResult.push(word);
       rotatedCache = wordsHavePotentialColumnWords(
@@ -141,7 +144,10 @@ const recursivelyTestWords = function recursivelyTestWords(candidateResultZ, row
           }
           return rotatedCache;
         }
-        return recursivelyTestWords([...candidateResult], rowDictionary, [...rotatedCache], columnLength, mappedDictionary, returnNotLog, bannedLastWords);
+        const anAnswer = recursivelyTestWords([...candidateResult], rowDictionary, [...rotatedCache], columnLength, mappedDictionary, returnNotLog, bannedLastWords);
+        if (anAnswer && returnNotLog) {
+          return anAnswer;
+        }
       }
     }
     candidateResult = [...candidateResultZ];
@@ -149,10 +155,11 @@ const recursivelyTestWords = function recursivelyTestWords(candidateResultZ, row
 };
 
 // todo:  make better args
-const solveDictionary = function solveDictionary(dictionary, consoleLogging, returnNotLog, startRowLength, startColumnLength) {
+const solveDictionary = function solveDictionary(dictionary, consoleLogging, returnNotLog, startRowLength, startColumnLength, startIndex) {
   const dictionaryLength = splitByLength(dictionary);
   const mappedDictionary = dictionaryMapper(dictionaryLength);
   const MAXLENS = dictionaryLength.length;
+  let useStartIndex = !!startIndex;
 
   for (let columnLength = startColumnLength || MAXLENS; columnLength > 2; columnLength -= 1) {
     if (consoleLogging) {
@@ -167,11 +174,12 @@ const solveDictionary = function solveDictionary(dictionary, consoleLogging, ret
         const candidateResult = [];
         const rotatedCache = [];
         const bannedLastWords = [];
-        const recursiveResult = recursivelyTestWords([...candidateResult], rowDictionary, [...rotatedCache], columnLength, mappedDictionary, returnNotLog, bannedLastWords);
+        const recursiveResult = recursivelyTestWords([...candidateResult], rowDictionary, [...rotatedCache], columnLength, mappedDictionary, returnNotLog, bannedLastWords, consoleLogging, useStartIndex && startIndex);
         if (recursiveResult) {
           return recursiveResult;
         }
       }
+      useStartIndex = false;
     }
   }
 };
